@@ -1,0 +1,19 @@
+.AppContainer {
+  max-width: 1280px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.SignUpContainer {
+}
+
+.SignInContainer {
+}
+
+.SuccessMessage {
+  color: green;
+}
+
+.ErrorMessage {
+  color: red;
+}
