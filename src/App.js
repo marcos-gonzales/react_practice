@@ -1,4 +1,8 @@
 import React, { useState } from 'react'
+
+import Login from './components/Login/Login'
+import Signup from './components/Signup/Signup'
+
 import classes from './App.module.css'
 
 const App = () => {
@@ -50,7 +54,7 @@ const App = () => {
       })
   }
 
-  const signIn = (e) => {
+  const login = (e) => {
     e.preventDefault()
     const body = {
       signInUsername: signInUsername,
@@ -81,89 +85,32 @@ const App = () => {
   return (
     <div className={classes.AppContainer}>
       {loggedIn ? (
-        <p>You are logged in!</p>
+        <>
+          <p>You are logged in.</p>
+        </>
       ) : (
         <>
-          <div className={classes.SignUpContainer}>
-            <div>
-              <h2>Sign up!</h2>
-              <label>
-                Username
-                <input
-                  type='text'
-                  placeholder='John Wick'
-                  name='username'
-                  onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                ></input>
-              </label>
-            </div>
-
-            <div>
-              <label>
-                Password
-                <input
-                  type='password'
-                  placeholder='gunsanddogs'
-                  name='password'
-                  onChange={(e) => setPassword(e.target.value)}
-                ></input>
-              </label>
-              <button
-                onClick={createUsername}
-                disabled={
-                  username.length >= 3 && password.length >= 5 ? false : true
-                }
-              >
-                Submit
-              </button>
-            </div>
-          </div>
-
-          {signup ? <p>{signup.message}</p> : null}
-          {signupError ? <p>{signupError.errors[0].msg}</p> : <p></p>}
-
-          <div className={classes.SignInContainer}>
-            <h2>Sign in!</h2>
-            <div>
-              <label>
-                Username
-                <input
-                  type='text'
-                  placeholder='Oswald'
-                  name='signInUsername'
-                  onChange={(e) =>
-                    setSignInUsername(e.target.value.toLowerCase())
-                  }
-                ></input>
-              </label>
-            </div>
-
-            <div>
-              <label>
-                <input
-                  type='password'
-                  placeholder='iljulie'
-                  name='signInPassword'
-                  onChange={(e) => setSignInPassword(e.target.value)}
-                ></input>
-              </label>
-              <button
-                onClick={signIn}
-                disabled={
-                  signInUsername.length >= 3 && signInPassword.length >= 5
-                    ? false
-                    : true
-                }
-              >
-                Submit
-              </button>
-            </div>
-          </div>
+          <Login
+            setSignInPassword={setSignInPassword}
+            setSignInUsername={setSignInUsername}
+            login={login}
+            signInPassword={signInPassword}
+            signInUsername={signInUsername}
+          />
           {message.successMessage ? (
             <h3 className={classes.SuccessMessage}>{message.successMessage}</h3>
           ) : (
             <h3 className={classes.ErrorMessage}>{message.errorMessage}</h3>
           )}
+          <Signup
+            setUsername={setUsername}
+            setPassword={setPassword}
+            createUsername={createUsername}
+            username={username}
+            password={password}
+          />
+          {signup ? <p>{signup.message}</p> : null}
+          {signupError ? <p>{signupError.errors[0].msg}</p> : <p></p>}
         </>
       )}
     </div>
