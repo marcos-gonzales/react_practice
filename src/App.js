@@ -1,26 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
-import Login from './components/Login/Login'
-import Signup from './components/Signup/Signup'
+import Login from './components/Login/Login';
+import Signup from './components/Signup/Signup';
 
-import classes from './App.module.css'
+import classes from './App.module.css';
 
 const App = () => {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [signInUsername, setSignInUsername] = useState('')
-  const [signInPassword, setSignInPassword] = useState('')
-  const [message, setMessage] = useState({})
-  const [signup, setupSignup] = useState()
-  const [signupError, setSignupError] = useState()
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [signInUsername, setSignInUsername] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [loginMessage, setLoginMessage] = useState();
+  const [loginErrorMessage, setLoginErrorMessage] = useState();
+  const [signup, setupSignup] = useState();
+  const [signupError, setSignupError] = useState();
 
   const createUsername = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const body = {
       username: username,
       password: password,
-    }
+    };
 
     fetch('http://localhost:4000/createuser', {
       method: 'POST',
@@ -31,35 +32,35 @@ const App = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data, 'THIS IS IN DATA')
+        console.log(data, 'THIS IS IN DATA');
         if (data.message) {
-          setupSignup(data)
-          setSignupError(false)
+          setupSignup(data);
+          setSignupError(false);
         }
         if (data.errors) {
-          setSignupError(data)
+          setSignupError(data);
         }
       })
       .catch((err) => {
-        console.log(err, 'THIS IS IN ERROR')
+        console.log(err, 'THIS IS IN ERROR');
         if (err.message) {
-          setupSignup(err)
+          setupSignup(err);
         }
         if (err.errors) {
-          setSignupError(err)
+          setSignupError(err);
         }
       })
       .finally((lastStep) => {
-        console.log('reached here')
-      })
-  }
+        console.log('reached here');
+      });
+  };
 
   const login = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     const body = {
       signInUsername: signInUsername,
       signInPassword: signInPassword,
-    }
+    };
 
     fetch('http://localhost:4000/signin', {
       method: 'POST',
@@ -70,17 +71,21 @@ const App = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data, 'sent data.')
-        setMessage(data)
+        console.log(data);
+        if (data.successMessage) {
+          setLoginMessage(data);
+          setLoginErrorMessage(false);
+        }
+        if (data.errorMessage) {
+          setLoginMessage(false);
+          setLoginErrorMessage(data);
+        }
       })
       .catch((err) => {
-        setMessage(err)
-        console.log('oops something went wrong', err)
-      })
-      .finally(() => {
-        console.log(message)
-      })
-  }
+        setLoginErrorMessage(err);
+        console.log('oops something went wrong', err);
+      });
+  };
 
   return (
     <div className={classes.AppContainer}>
@@ -97,11 +102,17 @@ const App = () => {
             signInPassword={signInPassword}
             signInUsername={signInUsername}
           />
-          {message.successMessage ? (
-            <h3 className={classes.SuccessMessage}>{message.successMessage}</h3>
-          ) : (
-            <h3 className={classes.ErrorMessage}>{message.errorMessage}</h3>
-          )}
+          {loginMessage ? (
+            <h3 className={classes.SuccessMessage}>
+              {loginMessage.successMessage}
+            </h3>
+          ) : null}
+          {loginErrorMessage ? (
+            <p className={classes.ErrorMessage}>
+              {loginErrorMessage.errorMessage}
+            </p>
+          ) : null}
+
           <Signup
             setUsername={setUsername}
             setPassword={setPassword}
@@ -114,7 +125,7 @@ const App = () => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
