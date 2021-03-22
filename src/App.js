@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
+import Chatroom from './components/Chatroom/Chatroom';
 
 import classes from './App.module.css';
 
@@ -15,6 +16,12 @@ const App = () => {
   const [loginErrorMessage, setLoginErrorMessage] = useState();
   const [signup, setupSignup] = useState();
   const [signupError, setSignupError] = useState();
+
+  const setIntervalMessage = () => {
+    setInterval(() => {
+      setLoginMessage(false);
+    }, 5000);
+  };
 
   const createUsername = (e) => {
     e.preventDefault();
@@ -74,6 +81,7 @@ const App = () => {
         console.log(data);
         if (data.successMessage) {
           setLoginMessage(data);
+          setLoggedIn(true);
           setLoginErrorMessage(false);
         }
         if (data.errorMessage) {
@@ -91,7 +99,13 @@ const App = () => {
     <div className={classes.AppContainer}>
       {loggedIn ? (
         <>
-          <p>You are logged in.</p>
+          <Chatroom />
+          {loginMessage ? setIntervalMessage() : null}
+          {loginMessage ? (
+            <h3 className={classes.SuccessMessage}>
+              {loginMessage.successMessage}
+            </h3>
+          ) : null}
         </>
       ) : (
         <>
@@ -102,11 +116,7 @@ const App = () => {
             signInPassword={signInPassword}
             signInUsername={signInUsername}
           />
-          {loginMessage ? (
-            <h3 className={classes.SuccessMessage}>
-              {loginMessage.successMessage}
-            </h3>
-          ) : null}
+
           {loginErrorMessage ? (
             <p className={classes.ErrorMessage}>
               {loginErrorMessage.errorMessage}
