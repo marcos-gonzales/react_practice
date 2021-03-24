@@ -16,6 +16,7 @@ const App = () => {
   const [loginErrorMessage, setLoginErrorMessage] = useState();
   const [signup, setupSignup] = useState();
   const [signupError, setSignupError] = useState();
+  const [user, setUser] = useState();
 
   const setIntervalMessage = () => {
     setInterval(() => {
@@ -83,6 +84,7 @@ const App = () => {
           setLoginMessage(data);
           setLoggedIn(true);
           setLoginErrorMessage(false);
+          setUser(data.user);
         }
         if (data.errorMessage) {
           setLoginMessage(false);
@@ -99,7 +101,7 @@ const App = () => {
     <div className={classes.AppContainer}>
       {loggedIn ? (
         <>
-          <Chatroom />
+          <Chatroom user={user} />
           {loginMessage ? setIntervalMessage() : null}
           {loginMessage ? (
             <h3 className={classes.SuccessMessage}>

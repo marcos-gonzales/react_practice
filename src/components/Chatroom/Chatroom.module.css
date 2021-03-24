@@ -1,0 +1,10 @@
+.ChatroomContainer {
+  width: 100%;
+}
+
+.ChatroomBox {
+  max-width: 1280px;
+  margin: 50px 0;
+  height: 80vh;
+  background-color: brown;
+}
