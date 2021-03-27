@@ -79,12 +79,11 @@ const App = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         if (data.successMessage) {
+          setUser(data.user);
           setLoginMessage(data);
           setLoggedIn(true);
           setLoginErrorMessage(false);
-          setUser(data.user);
         }
         if (data.errorMessage) {
           setLoginMessage(false);
@@ -101,13 +100,14 @@ const App = () => {
     <div className={classes.AppContainer}>
       {loggedIn ? (
         <>
-          <Chatroom user={user} />
           {loginMessage ? setIntervalMessage() : null}
           {loginMessage ? (
             <h3 className={classes.SuccessMessage}>
               {loginMessage.successMessage}
             </h3>
           ) : null}
+
+          <Chatroom user={user} />
         </>
       ) : (
         <>
