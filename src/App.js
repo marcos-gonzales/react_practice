@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
@@ -17,6 +17,7 @@ const App = () => {
   const [signup, setupSignup] = useState();
   const [signupError, setSignupError] = useState();
   const [user, setUser] = useState();
+  const [getAllMessages, setGetAllMessages] = useState();
 
   const setIntervalMessage = () => {
     setInterval(() => {
@@ -96,6 +97,18 @@ const App = () => {
       });
   };
 
+  useEffect(() => {
+    console.log('use effect is in use.');
+    fetch(`http://localhost:4000/getallmessages`)
+      .then((data) => data.json())
+      .then((messages) => {
+        setGetAllMessages(messages);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className={classes.AppContainer}>
       {loggedIn ? (
@@ -107,7 +120,11 @@ const App = () => {
             </h3>
           ) : null}
 
-          <Chatroom user={user} />
+          <Chatroom
+            user={user}
+            getAllMessages={getAllMessages}
+            setGetAllMessages={setGetAllMessages}
+          />
         </>
       ) : (
         <>
