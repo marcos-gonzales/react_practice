@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 import classes from './Chatroom.module.css';
 
 const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
-  const [messagesFromArray, setMessages] = useState({ ...getAllMessages });
   const [flag, setFlag] = useState(false);
+  const [randomColor, setRandomColor] = useState(
+    Math.floor(Math.random() * 16777215).toString(16)
+  );
+  const ENDPOINT = 'http://localhost:4000/getallmessages';
+  var socket = io(ENDPOINT);
 
   const messagesEndRef = useRef(null);
 
@@ -14,15 +19,16 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const setFlagInterval = () => {
-    setInterval(() => {
-      setFlag(true);
-    }, 5000);
-  };
-
-  setFlagInterval();
+  useEffect(() => {
+    socket.on('connect', () => {
+      socket.send('hello');
+      console.log('connected.');
+    });
+    console.log(socket);
+  }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line;
     fetch(`http://localhost:4000/getallusers`)
       .then((data) => data.json())
       .then((users) => {
@@ -33,6 +39,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line;
     fetch(`http://localhost:4000/getuser/${user.username}/${user.id}`)
       .then((response) => response.json())
       .then((data) => {
@@ -45,6 +52,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
 
   const sendMessage = (e) => {
     setUserMessage('');
+
     e.preventDefault();
 
     const body = {
@@ -65,6 +73,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
       })
       .then((message) => {
         console.log('success', message);
+        setFlag(true);
       })
       .catch((err) => {
         console.log(err);
@@ -76,23 +85,20 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   };
 
   useEffect(() => {
-    if (flag) {
-      console.log('flag has been used.');
-      console.log('use effect is in use.');
-      fetch(`http://localhost:4000/getallmessages`)
-        .then((data) => data.json())
-        .then((messages) => {
-          setGetAllMessages(messages);
-          setFlag(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [userMessage, flag]);
+    // eslint-disable-next-line;
+    if (flag === true);
+    fetch(`http://localhost:4000/getallmessages`)
+      .then((data) => data.json())
+      .then((messages) => {
+        setGetAllMessages(messages);
+        setFlag(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [flag]);
 
   useEffect(() => {
-    console.log('use effect is in use.');
     scrollToBottom();
   }, [getAllMessages, flag]);
 
@@ -118,8 +124,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
                     className={classes.UsernameColor}
                     //create a random color to differenciate users.
                     style={{
-                      color:
-                        '#' + Math.floor(Math.random() * 16777215).toString(16),
+                      color: '#' + randomColor,
                     }}
                   >
                     {user.username} :
