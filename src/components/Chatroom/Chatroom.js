@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
 import classes from './Chatroom.module.css';
 
-const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
+const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
@@ -10,22 +9,29 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   const [randomColor, setRandomColor] = useState(
     Math.floor(Math.random() * 16777215).toString(16)
   );
-  const ENDPOINT = 'http://localhost:4000/getallmessages';
-  var socket = io(ENDPOINT);
+  const [personalMessage, setMessage] = useState();
 
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
   useEffect(() => {
-    socket.on('connect', () => {
-      socket.send('hello');
+    socket.on('connect', (arg) => {
       console.log('connected.');
+
+      const message = { message: personalMessage };
+      socket.emit('message', message);
+
+      socket.on('updateBubbles', (data) => {
+        console.log('update bubbles', data);
+      });
+
+      socket.emit('remove', () => {
+        socket.disconnect();
+      });
     });
-    console.log(socket);
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     // eslint-disable-next-line;
@@ -51,8 +57,6 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   }, []);
 
   const sendMessage = (e) => {
-    setUserMessage('');
-
     e.preventDefault();
 
     const body = {
@@ -74,6 +78,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
       .then((message) => {
         console.log('success', message);
         setFlag(true);
+        setUserMessage('');
       })
       .catch((err) => {
         console.log(err);
@@ -82,6 +87,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
 
   const getUserInput = (e) => {
     setUserMessage(e.target.value);
+    setMessage(e.target.value);
   };
 
   useEffect(() => {
