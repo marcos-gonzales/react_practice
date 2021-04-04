@@ -1,31 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
 import classes from './Chatroom.module.css';
 
-const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
+const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
   const [flag, setFlag] = useState(false);
+  const [personalMessage, setMessage] = useState();
+  const [getnewMessage, setNewMessage] = useState([]);
   const [randomColor, setRandomColor] = useState(
     Math.floor(Math.random() * 16777215).toString(16)
   );
-  const ENDPOINT = 'http://localhost:4000/getallmessages';
-  var socket = io(ENDPOINT);
 
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  useEffect(() => {
-    socket.on('connect', () => {
-      socket.send('hello');
-      console.log('connected.');
-    });
-    console.log(socket);
-  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line;
@@ -50,38 +41,9 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
       });
   }, []);
 
-  const sendMessage = (e) => {
-    setUserMessage('');
-
-    e.preventDefault();
-
-    const body = {
-      userMessage: userMessage,
-      user: user.username,
-      userId: user.id,
-    };
-
-    fetch(`http://localhost:4000/sendmessage/${user.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then((data) => {
-        return data.json();
-      })
-      .then((message) => {
-        console.log('success', message);
-        setFlag(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const getUserInput = (e) => {
     setUserMessage(e.target.value);
+    setMessage(e.target.value);
   };
 
   useEffect(() => {
@@ -101,6 +63,45 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
   useEffect(() => {
     scrollToBottom();
   }, [getAllMessages, flag]);
+
+  const ioSendMessage = (e) => {
+    console.log('went in ioSentMessage');
+    e.preventDefault();
+    const body = {
+      userMessage: userMessage,
+      user: user.username,
+      userId: user.id,
+    };
+
+    fetch(`http://localhost:4000/sendmessage/${user.id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((data) => {
+        return data.json();
+      })
+      .then((message) => {
+        console.log('success', message);
+        setFlag(true);
+        setUserMessage('');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    socket.emit('new_message', {
+      username: user.username,
+      message: userMessage,
+    });
+
+    socket.on('new_message', (message) => {
+      setNewMessage(getnewMessage ? [...getnewMessage, message] : null);
+      console.log(getnewMessage);
+    });
+  };
 
   if (
     user === undefined ||
@@ -138,6 +139,14 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
             <div ref={messagesEndRef} />
           </div>
         ))}
+        {getnewMessage
+          ? getnewMessage.map((message) => (
+              <p>
+                <span>{message.username} </span>
+                {message.message}
+              </p>
+            ))
+          : null}
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
@@ -148,10 +157,10 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages }) => {
           name='userMessage'
           placeholder='hi eli ;)'
           onChange={(e) => getUserInput(e)}
-          onKeyDownCapture={(e) => (e.keyCode === 13 ? sendMessage(e) : null)}
+          onKeyDownCapture={(e) => (e.keyCode === 13 ? ioSendMessage(e) : null)}
           value={userMessage}
         ></input>
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={ioSendMessage}>Send</button>
       </div>
     </div>
   );

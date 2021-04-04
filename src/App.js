@@ -3,8 +3,11 @@ import React, { useState, useEffect } from 'react';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Chatroom from './components/Chatroom/Chatroom';
-
 import classes from './App.module.css';
+
+import { io } from 'socket.io-client';
+const ENDPOINT = 'http://localhost:4000';
+var socket = io(ENDPOINT, { forceNew: true });
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -98,7 +101,6 @@ const App = () => {
   };
 
   useEffect(() => {
-    console.log('use effect is in use.');
     fetch(`http://localhost:4000/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
@@ -124,6 +126,8 @@ const App = () => {
             user={user}
             getAllMessages={getAllMessages}
             setGetAllMessages={setGetAllMessages}
+            socket={socket}
+            io={io}
           />
         </>
       ) : (
