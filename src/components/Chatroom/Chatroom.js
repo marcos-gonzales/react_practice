@@ -1,37 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classes from './Chatroom.module.css';
 
-const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
+const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
   const [flag, setFlag] = useState(false);
+  const [personalMessage, setMessage] = useState();
+  const [getnewMessage, setNewMessage] = useState([]);
   const [randomColor, setRandomColor] = useState(
     Math.floor(Math.random() * 16777215).toString(16)
   );
-  const [personalMessage, setMessage] = useState();
 
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-  useEffect(() => {
-    socket.on('connect', (arg) => {
-      console.log('connected.');
-
-      const message = { message: personalMessage };
-      socket.emit('message', message);
-
-      socket.on('updateBubbles', (data) => {
-        console.log('update bubbles', data);
-      });
-
-      socket.emit('remove', () => {
-        socket.disconnect();
-      });
-    });
-  }, [socket]);
 
   useEffect(() => {
     // eslint-disable-next-line;
@@ -56,9 +41,32 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
       });
   }, []);
 
-  const sendMessage = (e) => {
-    e.preventDefault();
+  const getUserInput = (e) => {
+    setUserMessage(e.target.value);
+    setMessage(e.target.value);
+  };
 
+  useEffect(() => {
+    // eslint-disable-next-line;
+    if (flag === true);
+    fetch(`http://localhost:4000/getallmessages`)
+      .then((data) => data.json())
+      .then((messages) => {
+        setGetAllMessages(messages);
+        setFlag(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [flag]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [getAllMessages, flag]);
+
+  const ioSendMessage = (e) => {
+    console.log('went in ioSentMessage');
+    e.preventDefault();
     const body = {
       userMessage: userMessage,
       user: user.username,
@@ -83,30 +91,17 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
       .catch((err) => {
         console.log(err);
       });
+
+    socket.emit('new_message', {
+      username: user.username,
+      message: userMessage,
+    });
+
+    socket.on('new_message', (message) => {
+      setNewMessage(getnewMessage ? [...getnewMessage, message] : null);
+      console.log(getnewMessage);
+    });
   };
-
-  const getUserInput = (e) => {
-    setUserMessage(e.target.value);
-    setMessage(e.target.value);
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line;
-    if (flag === true);
-    fetch(`http://localhost:4000/getallmessages`)
-      .then((data) => data.json())
-      .then((messages) => {
-        setGetAllMessages(messages);
-        setFlag(false);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [flag]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [getAllMessages, flag]);
 
   if (
     user === undefined ||
@@ -144,6 +139,14 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
             <div ref={messagesEndRef} />
           </div>
         ))}
+        {getnewMessage
+          ? getnewMessage.map((message) => (
+              <p>
+                <span>{message.username} </span>
+                {message.message}
+              </p>
+            ))
+          : null}
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
@@ -154,10 +157,10 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket }) => {
           name='userMessage'
           placeholder='hi eli ;)'
           onChange={(e) => getUserInput(e)}
-          onKeyDownCapture={(e) => (e.keyCode === 13 ? sendMessage(e) : null)}
+          onKeyDownCapture={(e) => (e.keyCode === 13 ? ioSendMessage(e) : null)}
           value={userMessage}
         ></input>
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={ioSendMessage}>Send</button>
       </div>
     </div>
   );
