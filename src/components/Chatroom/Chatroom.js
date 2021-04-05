@@ -58,14 +58,13 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [flag]);
+  }, [flag, getnewMessage]);
 
   useEffect(() => {
     scrollToBottom();
   }, [getAllMessages, flag]);
 
   const ioSendMessage = (e) => {
-    console.log('went in ioSentMessage');
     e.preventDefault();
     const body = {
       userMessage: userMessage,
@@ -98,8 +97,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
     });
 
     socket.on('new_message', (message) => {
-      setNewMessage(getnewMessage ? [...getnewMessage, message] : null);
-      console.log(getnewMessage);
+      setNewMessage(message);
     });
   };
 
@@ -139,14 +137,6 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
             <div ref={messagesEndRef} />
           </div>
         ))}
-        {getnewMessage
-          ? getnewMessage.map((message) => (
-              <p>
-                <span>{message.username} </span>
-                {message.message}
-              </p>
-            ))
-          : null}
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
