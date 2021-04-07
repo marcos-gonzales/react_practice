@@ -8,6 +8,8 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   const [flag, setFlag] = useState(false);
   const [personalMessage, setMessage] = useState();
   const [getnewMessage, setNewMessage] = useState([]);
+  const [_typing, setTyping] = useState();
+  const [userTyping, setUserTyping] = useState({});
   const [randomColor, setRandomColor] = useState(
     Math.floor(Math.random() * 16777215).toString(16)
   );
@@ -42,11 +44,24 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   }, []);
 
   const getUserInput = (e) => {
+    setTyping(true);
+    console.log('-------typing', _typing);
     setUserMessage(e.target.value);
     setMessage(e.target.value);
+    socket.emit('typing', user);
+    socket.on('typing', (typing) => {
+      if (typing) {
+        setTyping(true);
+        setUserTyping(typing);
+        setTimeout(() => {
+          setTyping(false);
+        }, 3000);
+      }
+    });
   };
 
   useEffect(() => {
+    console.log('use effect is in use.');
     // eslint-disable-next-line;
     if (flag === true);
     fetch(`http://localhost:4000/getallmessages`)
@@ -58,7 +73,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [flag, getnewMessage]);
+  }, [flag, getnewMessage, socket]);
 
   useEffect(() => {
     scrollToBottom();
@@ -134,9 +149,15 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
               )}
               {allMessages.message}
             </p>
-            <div ref={messagesEndRef} />
           </div>
         ))}
+
+        {_typing && userTyping ? (
+          <span className={classes.Typing}>
+            {userTyping.username} is typing...
+          </span>
+        ) : null}
+        <div ref={messagesEndRef} />
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
@@ -150,6 +171,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
           onKeyDownCapture={(e) => (e.keyCode === 13 ? ioSendMessage(e) : null)}
           value={userMessage}
         ></input>
+
         <button onClick={ioSendMessage}>Send</button>
       </div>
     </div>
