@@ -8,7 +8,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   const [flag, setFlag] = useState(false);
   const [personalMessage, setMessage] = useState();
   const [getnewMessage, setNewMessage] = useState([]);
-  const [_typing, setTyping] = useState();
+  const [_typing, setTyping] = useState(false);
   const [userTyping, setUserTyping] = useState({});
   const [randomColor, setRandomColor] = useState(
     Math.floor(Math.random() * 16777215).toString(16)
@@ -45,7 +45,6 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
 
   const getUserInput = (e) => {
     setTyping(true);
-    console.log('-------typing', _typing);
     setUserMessage(e.target.value);
     setMessage(e.target.value);
     socket.emit('typing', user);
@@ -149,19 +148,19 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
               )}
               {allMessages.message}
             </p>
+            <div ref={messagesEndRef} />
           </div>
         ))}
-
-        {_typing && userTyping ? (
-          <span className={classes.Typing}>
-            {userTyping.username} is typing...
-          </span>
-        ) : null}
-        <div ref={messagesEndRef} />
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
       </div>
+      {_typing ? (
+        <span className={classes.Typing}>
+          {userTyping.username} is typing...
+        </span>
+      ) : null}
+
       <div className={classes.SendMessageUI}>
         <input
           type='text'

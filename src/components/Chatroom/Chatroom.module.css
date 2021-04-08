@@ -15,9 +15,9 @@
 
 .SendMessageUI input[type='text'] {
   font-size: 16px;
-  margin-left: 5px;
   padding-left: 5px;
   height: 30px;
+  margin-top: 10px;
 }
 
 .SendMessageUI button {
@@ -43,4 +43,6 @@
 
 .Typing {
   color: blue;
+  position: absolute;
+  top: 85vh;
 }
