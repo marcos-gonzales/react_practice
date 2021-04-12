@@ -1,13 +1,3 @@
-.SignUpContainer {
-}
-
-.SignInContainer {
-}
-
-.SuccessMessage {
-  color: green;
-}
-
-.ErrorMessage {
-  color: red;
+.Label {
+  font-size: 1.2rem;
 }

@@ -21,6 +21,7 @@ const App = () => {
   const [signupError, setSignupError] = useState();
   const [user, setUser] = useState();
   const [getAllMessages, setGetAllMessages] = useState();
+  const h1Styling = [classes.Welcome, ' center teal-text text-teal-lighten-2'];
 
   const setIntervalMessage = () => {
     setInterval(() => {
@@ -112,7 +113,7 @@ const App = () => {
   }, []);
 
   return (
-    <div className={classes.AppContainer}>
+    <div className='container'>
       {loggedIn ? (
         <>
           {loginMessage ? setIntervalMessage() : null}
@@ -132,6 +133,10 @@ const App = () => {
         </>
       ) : (
         <>
+          <h1 className='center teal-text text-teal-lighten-2'>Welcome to</h1>
+          <h1 className={h1Styling[0] + h1Styling[1]}>
+            <span className='#000000 black'>Chat.io</span>
+          </h1>
           <Login
             setSignInPassword={setSignInPassword}
             setSignInUsername={setSignInUsername}
@@ -141,9 +146,7 @@ const App = () => {
           />
 
           {loginErrorMessage ? (
-            <p className={classes.ErrorMessage}>
-              {loginErrorMessage.errorMessage}
-            </p>
+            <p className='white-text'>{loginErrorMessage.errorMessage}</p>
           ) : null}
 
           <Signup
@@ -153,8 +156,12 @@ const App = () => {
             username={username}
             password={password}
           />
-          {signup ? <p>{signup.message}</p> : null}
-          {signupError ? <p>{signupError.errors[0].msg}</p> : <p></p>}
+          {signup ? <p className='white-text'>{signup.message}</p> : null}
+          {signupError ? (
+            <p className='white-text'>{signupError.errors[0].msg}</p>
+          ) : (
+            <p></p>
+          )}
         </>
       )}
     </div>

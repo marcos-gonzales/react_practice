@@ -124,12 +124,14 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
     return <p>loading..</p>;
 
   return (
-    <div className={classes.ChatroomContainer}>
-      <h1>Welcome {user ? user.username : 'Elita'}</h1>
+    <div className='container'>
+      <h3 className='white-text'>
+        Welcome {user ? user.username : 'Unknown User'}
+      </h3>
       <div className={classes.ChatroomBox}>
         {getAllMessages.message.map((allMessages) => (
           <div key={allMessages.id}>
-            <p>
+            <p className='truncate'>
               {getAllUsers.messages.map((user) =>
                 user.id === allMessages.userId ? (
                   <span
@@ -155,23 +157,40 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
       </div>
+
       {_typing ? (
-        <span className={classes.Typing}>
+        <span
+          style={{ position: 'absolute', marginTop: '-15px' }}
+          className='white-text left'
+        >
           {userTyping.username} is typing...
         </span>
       ) : null}
 
-      <div className={classes.SendMessageUI}>
-        <input
-          type='text'
-          name='userMessage'
-          placeholder='hi eli ;)'
-          onChange={(e) => getUserInput(e)}
-          onKeyDownCapture={(e) => (e.keyCode === 13 ? ioSendMessage(e) : null)}
-          value={userMessage}
-        ></input>
-
-        <button onClick={ioSendMessage}>Send</button>
+      <div className='row'>
+        <div className='col s10'>
+          <input
+            className='white-text'
+            type='text'
+            name='userMessage'
+            placeholder='hi eli ;)'
+            onChange={(e) => getUserInput(e)}
+            onKeyDownCapture={(e) =>
+              e.keyCode === 13 ? ioSendMessage(e) : null
+            }
+            value={userMessage}
+          ></input>
+        </div>
+        <div>
+          <a
+            className='btn brown darken-2 white-text waves-effect waves-light valign-wrapper col s2'
+            onClick={ioSendMessage}
+            disabled={userMessage.length ? false : true}
+          >
+            <i className='material-icons'>chat</i>
+            Send
+          </a>
+        </div>
       </div>
     </div>
   );
