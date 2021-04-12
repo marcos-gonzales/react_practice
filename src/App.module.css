@@ -1,19 +1,9 @@
-.AppContainer {
-  max-width: 1280px;
-  width: 80%;
-  margin: 0 auto;
+.Welcome {
+  transform: rotate(8deg);
+  font-size: 4rem;
+  font-weight: 600;
 }
 
-.SignUpContainer {
-}
-
-.SignInContainer {
-}
-
-.SuccessMessage {
-  color: green;
-}
-
-.ErrorMessage {
-  color: red;
+body {
+  background-color: #232222;
 }
