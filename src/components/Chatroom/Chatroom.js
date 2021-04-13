@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classes from './Chatroom.module.css';
 
-const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
+const Chatroom = ({
+  user,
+  getAllMessages,
+  setGetAllMessages,
+  socket,
+  io,
+  userThatSignedUp,
+  userFlag,
+}) => {
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
@@ -25,29 +33,49 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
     fetch(`http://localhost:4000/getallusers`)
       .then((data) => data.json())
       .then((users) => {
-        console.log('-----ALL USERS------', users);
         setGetAllUsers(users);
       })
       .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {
+      if (userFlag) {
+        fetch(
+          `http://localhost:4000/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            setGetMessages(data.message);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        fetch(`http://localhost:4000/getuser/${user.username}/${user.id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setGetMessages(data.message);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }, 2000);
+
     // eslint-disable-next-line;
-    fetch(`http://localhost:4000/getuser/${user.username}/${user.id}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setGetMessages(data.message);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   }, []);
 
   const getUserInput = (e) => {
     setTyping(true);
     setUserMessage(e.target.value);
     setMessage(e.target.value);
-    socket.emit('typing', user);
+    if (userFlag) {
+      socket.emit('typing', userThatSignedUp.user);
+    } else {
+      socket.emit('typing', user);
+    }
+
     socket.on('typing', (typing) => {
       if (typing) {
         setTyping(true);
@@ -79,54 +107,84 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
   }, [getAllMessages, flag]);
 
   const ioSendMessage = (e) => {
+    let body;
     e.preventDefault();
-    const body = {
-      userMessage: userMessage,
-      user: user.username,
-      userId: user.id,
-    };
 
-    fetch(`http://localhost:4000/sendmessage/${user.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-      .then((data) => {
-        return data.json();
+    if (userFlag) {
+      body = {
+        userMessage: userMessage,
+        user: userThatSignedUp.username,
+        userId: userThatSignedUp.id,
+      };
+    } else {
+      body = {
+        userMessage: userMessage,
+        user: user.username,
+        userId: user.id,
+      };
+    }
+
+    if (userFlag) {
+      fetch(`http://localhost:4000/sendmessage/${userThatSignedUp.user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       })
-      .then((message) => {
-        console.log('success', message);
-        setFlag(true);
-        setUserMessage('');
+        .then((data) => {
+          return data.json();
+        })
+        .then((message) => {
+          setFlag(true);
+          setUserMessage('');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      fetch(`http://localhost:4000/sendmessage/${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       })
-      .catch((err) => {
-        console.log(err);
+        .then((data) => {
+          return data.json();
+        })
+        .then((message) => {
+          setFlag(true);
+          setUserMessage('');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    if (userFlag) {
+      socket.emit('new_message', {
+        username: userThatSignedUp.user.username,
+        message: userThatSignedUp.user.userMessage,
       });
-
-    socket.emit('new_message', {
-      username: user.username,
-      message: userMessage,
-    });
+    } else {
+      socket.emit('new_message', {
+        username: user.username,
+        message: userMessage,
+      });
+    }
 
     socket.on('new_message', (message) => {
       setNewMessage(message);
     });
   };
 
-  if (
-    user === undefined ||
-    getMessages === undefined ||
-    getAllMessages === undefined ||
-    getAllUsers === undefined
-  )
-    return <p>loading..</p>;
+  if (!getAllMessages || !getAllUsers) return <h1>loading...</h1>;
 
   return (
     <div className='container'>
       <h3 className='white-text'>
-        Welcome {user ? user.username : 'Unknown User'}
+        Welcome {user ? user.username : userThatSignedUp.user.username}
       </h3>
       <div className={classes.ChatroomBox}>
         {getAllMessages.message.map((allMessages) => (
@@ -156,6 +214,7 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
 
         <input type='hidden' name={user ? user.username : ''} />
         <input type='hidden' name={user ? user.id : ''} />
+        {/* <input type='hidden' name={user ? user.email : ''} /> */}
       </div>
 
       {_typing ? (
@@ -172,24 +231,26 @@ const Chatroom = ({ user, getAllMessages, setGetAllMessages, socket, io }) => {
           <input
             className='white-text'
             type='text'
-            name='userMessage'
+            name='usermessage'
             placeholder='hi eli ;)'
             onChange={(e) => getUserInput(e)}
             onKeyDownCapture={(e) =>
-              e.keyCode === 13 ? ioSendMessage(e) : null
+              e.keyCode === 13 && userMessage.length >= 1
+                ? ioSendMessage(e)
+                : null
             }
             value={userMessage}
           ></input>
         </div>
         <div>
-          <a
+          <button
             className='btn brown darken-2 white-text waves-effect waves-light valign-wrapper col s2'
             onClick={ioSendMessage}
-            disabled={userMessage.length ? false : true}
+            disabled={userMessage.length >= 1 ? false : true}
           >
             <i className='material-icons'>chat</i>
             Send
-          </a>
+          </button>
         </div>
       </div>
     </div>
