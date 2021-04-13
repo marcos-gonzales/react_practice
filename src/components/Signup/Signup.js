@@ -8,6 +8,8 @@ const Signup = ({
   createUsername,
   username,
   password,
+  email,
+  setEmail,
 }) => {
   const labelStyling = [classes.Label, ' grey-text'];
 
@@ -32,11 +34,27 @@ const Signup = ({
 
       <div>
         <label>
+          Email
+          <input
+            className='white-text text-darken-2 input-field'
+            type='text'
+            placeholder='john@wick.com'
+            name='email'
+            onChange={(e) => setEmail(e.target.value.toLowerCase())}
+            onKeyDownCapture={(e) =>
+              e.keyCode === 13 ? createUsername(e) : null
+            }
+          ></input>
+        </label>
+      </div>
+
+      <div>
+        <label>
           Password
           <input
             className='white-text text-darken-2 input-field'
             type='password'
-            placeholder='gunsanddogs'
+            placeholder='*******'
             name='password'
             onChange={(e) => setPassword(e.target.value)}
             onKeyDownCapture={(e) =>

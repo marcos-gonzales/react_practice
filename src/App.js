@@ -15,6 +15,7 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [signInUsername, setSignInUsername] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [loginMessage, setLoginMessage] = useState();
   const [loginErrorMessage, setLoginErrorMessage] = useState();
   const [signup, setupSignup] = useState();
@@ -22,6 +23,8 @@ const App = () => {
   const [user, setUser] = useState();
   const [getAllMessages, setGetAllMessages] = useState();
   const h1Styling = [classes.Welcome, ' center teal-text text-teal-lighten-2'];
+  const [userThatSignedUp, setUserThatSignedUp] = useState();
+  const [userFlag, setUserFlag] = useState(false);
 
   const setIntervalMessage = () => {
     setInterval(() => {
@@ -34,6 +37,7 @@ const App = () => {
     const body = {
       username: username,
       password: password,
+      email: email,
     };
 
     fetch('http://localhost:4000/createuser', {
@@ -47,8 +51,11 @@ const App = () => {
       .then((data) => {
         console.log(data, 'THIS IS IN DATA');
         if (data.message) {
+          setUserFlag(true);
+          setUserThatSignedUp(data);
           setupSignup(data);
           setSignupError(false);
+          setLoggedIn(true);
         }
         if (data.errors) {
           setSignupError(data);
@@ -129,6 +136,8 @@ const App = () => {
             setGetAllMessages={setGetAllMessages}
             socket={socket}
             io={io}
+            userThatSignedUp={userThatSignedUp}
+            userFlag={userFlag}
           />
         </>
       ) : (
@@ -155,6 +164,8 @@ const App = () => {
             createUsername={createUsername}
             username={username}
             password={password}
+            email={email}
+            setEmail={setEmail}
           />
           {signup ? <p className='white-text'>{signup.message}</p> : null}
           {signupError ? (
