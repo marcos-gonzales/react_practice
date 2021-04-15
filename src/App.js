@@ -6,8 +6,11 @@ import Chatroom from './components/Chatroom/Chatroom';
 import classes from './App.module.css';
 
 import { io } from 'socket.io-client';
-const ENDPOINT = 'http://localhost:4000';
-var socket = io(ENDPOINT, { forceNew: true });
+const ENDPOINT = 'https://infallible-pasteur-b0e6fc.netlify.app/';
+var socket = io(ENDPOINT, {
+  forceNew: true,
+  origins: 'https://infallible-pasteur-b0e6fc.netlify.app/',
+});
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
