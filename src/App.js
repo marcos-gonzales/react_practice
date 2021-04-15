@@ -6,10 +6,10 @@ import Chatroom from './components/Chatroom/Chatroom';
 import classes from './App.module.css';
 
 import { io } from 'socket.io-client';
-const ENDPOINT = 'https://infallible-pasteur-b0e6fc.netlify.app/';
+const ENDPOINT = 'https://chatroom-express-db.herokuapp.com';
 var socket = io(ENDPOINT, {
   forceNew: true,
-  origins: 'https://infallible-pasteur-b0e6fc.netlify.app/',
+  origins: 'https://chatroom-express-db.herokuapp.com',
 });
 
 const App = () => {
