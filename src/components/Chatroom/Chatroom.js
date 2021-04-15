@@ -124,6 +124,7 @@ const Chatroom = ({
     }
 
     if (userFlag) {
+      //redirect user to chatroom is user signs up.
       fetch(
         `https://chatroom-express-db.herokuapp.com/sendmessage/${userThatSignedUp.user.id}`,
         {
@@ -145,6 +146,7 @@ const Chatroom = ({
           console.log(err);
         });
     } else {
+      //login in regulaur way.
       fetch(
         `https://chatroom-express-db.herokuapp.com/sendmessage/${user.id}`,
         {
