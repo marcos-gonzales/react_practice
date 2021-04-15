@@ -6,7 +6,7 @@ import Chatroom from './components/Chatroom/Chatroom';
 import classes from './App.module.css';
 
 import { io } from 'socket.io-client';
-const ENDPOINT = 'https://chatroom-express-db.herokuapp.com/';
+const ENDPOINT = 'http://localhost:4000';
 var socket = io(ENDPOINT, { forceNew: true });
 
 const App = () => {
