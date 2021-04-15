@@ -40,7 +40,7 @@ const App = () => {
       email: email,
     };
 
-    fetch('http://localhost:4000/createuser', {
+    fetch('https://chatroom-express-db.herokuapp.com/createuser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const App = () => {
       signInPassword: signInPassword,
     };
 
-    fetch('http://localhost:4000/signin', {
+    fetch('https://chatroom-express-db.herokuapp.com/signin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:4000/getallmessages`)
+    fetch(`https://chatroom-express-db.herokuapp.com/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);

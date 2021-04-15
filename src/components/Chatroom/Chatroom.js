@@ -10,17 +10,16 @@ const Chatroom = ({
   userThatSignedUp,
   userFlag,
 }) => {
+  // eslint-disable-next-line no-unused-vars
   const [getMessages, setGetMessages] = useState();
   const [userMessage, setUserMessage] = useState('');
   const [getAllUsers, setGetAllUsers] = useState();
   const [flag, setFlag] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [personalMessage, setMessage] = useState();
   const [getnewMessage, setNewMessage] = useState([]);
   const [_typing, setTyping] = useState(false);
   const [userTyping, setUserTyping] = useState({});
-  const [randomColor, setRandomColor] = useState(
-    Math.floor(Math.random() * 16777215).toString(16)
-  );
 
   const messagesEndRef = useRef(null);
 
@@ -29,8 +28,7 @@ const Chatroom = ({
   };
 
   useEffect(() => {
-    // eslint-disable-next-line;
-    fetch(`http://localhost:4000/getallusers`)
+    fetch(`https://chatroom-express-db.herokuapp.com/getallusers`)
       .then((data) => data.json())
       .then((users) => {
         setGetAllUsers(users);
@@ -42,7 +40,7 @@ const Chatroom = ({
     setTimeout(() => {
       if (userFlag) {
         fetch(
-          `http://localhost:4000/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
+          `https://chatroom-express-db.herokuapp.com/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -52,7 +50,9 @@ const Chatroom = ({
             console.log(err);
           });
       } else {
-        fetch(`http://localhost:4000/getuser/${user.username}/${user.id}`)
+        fetch(
+          `https://chatroom-express-db.herokuapp.com/getuser/${user.username}/${user.id}`
+        )
           .then((response) => response.json())
           .then((data) => {
             setGetMessages(data.message);
@@ -62,8 +62,7 @@ const Chatroom = ({
           });
       }
     }, 2000);
-
-    // eslint-disable-next-line;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserInput = (e) => {
@@ -89,9 +88,8 @@ const Chatroom = ({
 
   useEffect(() => {
     console.log('use effect is in use.');
-    // eslint-disable-next-line;
     if (flag === true);
-    fetch(`http://localhost:4000/getallmessages`)
+    fetch(`https://chatroom-express-db.herokuapp.com/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);
@@ -100,6 +98,7 @@ const Chatroom = ({
       .catch((err) => {
         console.log(err);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flag, getnewMessage, socket]);
 
   useEffect(() => {
@@ -125,13 +124,16 @@ const Chatroom = ({
     }
 
     if (userFlag) {
-      fetch(`http://localhost:4000/sendmessage/${userThatSignedUp.user.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
+      fetch(
+        `https://chatroom-express-db.herokuapp.com/sendmessage/${userThatSignedUp.user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        }
+      )
         .then((data) => {
           return data.json();
         })
@@ -143,13 +145,16 @@ const Chatroom = ({
           console.log(err);
         });
     } else {
-      fetch(`http://localhost:4000/sendmessage/${user.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      })
+      fetch(
+        `https://chatroom-express-db.herokuapp.com/sendmessage/${user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        }
+      )
         .then((data) => {
           return data.json();
         })
@@ -192,14 +197,7 @@ const Chatroom = ({
             <p className='truncate'>
               {getAllUsers.messages.map((user) =>
                 user.id === allMessages.userId ? (
-                  <span
-                    key={user.id}
-                    className={classes.UsernameColor}
-                    //create a random color to differenciate users.
-                    style={{
-                      color: '#' + randomColor,
-                    }}
-                  >
+                  <span key={user.id} className={classes.UsernameColor}>
                     {user.username} :
                   </span>
                 ) : (
