@@ -30,6 +30,7 @@ const Login = ({
 
       <div>
         <label className={labelStyling[0] + labelStyling[1]}>
+          Password
           <input
             className='white-text text-darken-2 input-field'
             type='password'

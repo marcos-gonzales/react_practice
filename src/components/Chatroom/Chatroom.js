@@ -34,7 +34,7 @@ const Chatroom = ({
         setGetAllUsers(users);
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     setTimeout(() => {
