@@ -13,7 +13,9 @@ const Login = ({
 
   return (
     <div>
-      <h2 className='teal-text teal-lighten-2'>Login in!</h2>
+      <h2 className='teal-text teal-lighten-2' style={{ marginTop: '60px' }}>
+        Login in!
+      </h2>
       <div>
         <label className={labelStyling[0] + labelStyling[1]}>
           Username

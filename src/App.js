@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Switch, Link, Route } from 'react-router-dom';
 
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Chatroom from './components/Chatroom/Chatroom';
@@ -123,62 +125,74 @@ const App = () => {
   }, []);
 
   return (
-    <div className='container'>
-      {loggedIn ? (
-        <>
-          {loginMessage ? setIntervalMessage() : null}
-          {loginMessage ? (
-            <h3 className={classes.SuccessMessage}>
-              {loginMessage.successMessage}
-            </h3>
-          ) : null}
+    <Router>
+      <Route path='/'>
+        <div className='container'>
+          {loggedIn ? (
+            <>
+              {loginMessage ? setIntervalMessage() : null}
+              {loginMessage ? (
+                <h3 className={classes.SuccessMessage}>
+                  {loginMessage.successMessage}
+                </h3>
+              ) : null}
 
-          <Chatroom
-            user={user}
-            getAllMessages={getAllMessages}
-            setGetAllMessages={setGetAllMessages}
-            socket={socket}
-            io={io}
-            userThatSignedUp={userThatSignedUp}
-            userFlag={userFlag}
-          />
-        </>
-      ) : (
-        <>
-          <h1 className='center teal-text text-teal-lighten-2'>Welcome to</h1>
-          <h1 className={h1Styling[0] + h1Styling[1]}>
-            <span className='#000000 black'>Chat.io</span>
-          </h1>
-          <Login
-            setSignInPassword={setSignInPassword}
-            setSignInUsername={setSignInUsername}
-            login={login}
-            signInPassword={signInPassword}
-            signInUsername={signInUsername}
-          />
-
-          {loginErrorMessage ? (
-            <p className='white-text'>{loginErrorMessage.errorMessage}</p>
-          ) : null}
-
-          <Signup
-            setUsername={setUsername}
-            setPassword={setPassword}
-            createUsername={createUsername}
-            username={username}
-            password={password}
-            email={email}
-            setEmail={setEmail}
-          />
-          {signup ? <p className='white-text'>{signup.message}</p> : null}
-          {signupError ? (
-            <p className='white-text'>{signupError.errors[0].msg}</p>
+              <Chatroom
+                user={user}
+                getAllMessages={getAllMessages}
+                setGetAllMessages={setGetAllMessages}
+                socket={socket}
+                io={io}
+                userThatSignedUp={userThatSignedUp}
+                userFlag={userFlag}
+              />
+            </>
           ) : (
-            <p></p>
+            <>
+              <h1 className='center teal-text text-teal-lighten-2'>
+                Welcome to
+              </h1>
+              <h1 className={h1Styling[0] + h1Styling[1]}>
+                <span className='#000000 black'>Chat.io</span>
+              </h1>
+
+              <Login
+                setSignInPassword={setSignInPassword}
+                setSignInUsername={setSignInUsername}
+                login={login}
+                signInPassword={signInPassword}
+                signInUsername={signInUsername}
+              />
+
+              {loginErrorMessage ? (
+                <p className='white-text'>{loginErrorMessage.errorMessage}</p>
+              ) : null}
+
+              <Signup
+                setUsername={setUsername}
+                setPassword={setPassword}
+                createUsername={createUsername}
+                username={username}
+                password={password}
+                email={email}
+                setEmail={setEmail}
+              />
+              {signup ? <p className='white-text'>{signup.message}</p> : null}
+              {signupError ? (
+                <p className='white-text'>{signupError.errors[0].msg}</p>
+              ) : (
+                <p></p>
+              )}
+            </>
           )}
-        </>
-      )}
-    </div>
+        </div>
+      </Route>
+      <Link to='/forgotpassword'>Forgot Password?</Link>
+
+      <Switch>
+        <Route exact path='/forgotpassword' component={ForgotPassword} />
+      </Switch>
+    </Router>
   );
 };
 

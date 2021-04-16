@@ -190,13 +190,13 @@ const Chatroom = ({
 
   return (
     <div className='container'>
-      <h3 className='white-text'>
+      <h4 className='white-text'>
         Welcome {user ? user.username : userThatSignedUp.user.username}
-      </h3>
+      </h4>
       <div className={classes.ChatroomBox}>
         {getAllMessages.message.map((allMessages) => (
           <div key={allMessages.id}>
-            <p className='truncate'>
+            <p className='flow-text'>
               {getAllUsers.messages.map((user) =>
                 user.id === allMessages.userId ? (
                   <span key={user.id} className={classes.UsernameColor}>
