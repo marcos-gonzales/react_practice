@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Link, Route } from 'react-router-dom';
+import { Switch, Link, Route } from 'react-router-dom';
 
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Chatroom from './components/Chatroom/Chatroom';
 import classes from './App.module.css';
+import ResetPasswordWToken from './components/ResetPasswordWToken/ResetPasswordWToken';
 
 import { io } from 'socket.io-client';
-const ENDPOINT = 'https://chatroom-express-db.herokuapp.com';
-var socket = io(ENDPOINT, {
+const ENDPOINTPRODUCTION = 'https://chatroom-express-db.herokuapp.com';
+const ENDPOINTDEV = 'http://localhost:4000';
+var socket = io(ENDPOINTDEV, {
   forceNew: true,
-  origins: 'https://chatroom-express-db.herokuapp.com',
+  origins: ENDPOINTDEV,
 });
 
 const App = () => {
@@ -30,6 +32,12 @@ const App = () => {
   const h1Styling = [classes.Welcome, ' center teal-text text-teal-lighten-2'];
   const [userThatSignedUp, setUserThatSignedUp] = useState();
   const [userFlag, setUserFlag] = useState(false);
+  const [resetPasswordFlag, setResetPasswordFlag] = useState(false);
+  const [resetPasswordTokenFlag, setResetPasswordTokenFlag] = useState(false);
+  const [emailValue, setEmailValue] = useState('');
+  const [sendUserEmail, setUserEMail] = useState(false);
+  const [token, setToken] = useState();
+  const [resetUser, setResetUser] = useState();
 
   const setIntervalMessage = () => {
     setInterval(() => {
@@ -45,7 +53,7 @@ const App = () => {
       email: email,
     };
 
-    fetch('https://chatroom-express-db.herokuapp.com/createuser', {
+    fetch(`${ENDPOINTDEV}/createuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,7 +95,7 @@ const App = () => {
       signInPassword: signInPassword,
     };
 
-    fetch('https://chatroom-express-db.herokuapp.com/signin', {
+    fetch('${ENDPOINTDEV}/signin', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -114,7 +122,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetch(`https://chatroom-express-db.herokuapp.com/getallmessages`)
+    fetch(`${ENDPOINTDEV}/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);
@@ -124,75 +132,111 @@ const App = () => {
       });
   }, []);
 
+  const resetPassword = () => {
+    const body = {
+      emailValue: emailValue,
+    };
+
+    console.log(emailValue);
+
+    fetch('http://localhost:4000/resetpassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((data) => data.json())
+      .then((result) => {
+        console.log('success THIS IS FIRST BLOCK.', result);
+        setToken(result.url);
+        setResetPasswordTokenFlag(true);
+        setResetUser(result);
+      })
+      .then((userMessage) => {
+        setUserEMail(true);
+        setResetPasswordTokenFlag(true);
+        console.log(resetPasswordTokenFlag);
+      });
+  };
+
+  if (resetPasswordFlag)
+    return (
+      <ForgotPassword
+        emailValue={emailValue}
+        setEmailValue={setEmailValue}
+        sendUserEmail={sendUserEmail}
+        setUserEMail={setUserEMail}
+        resetPassword={resetPassword}
+        token={token}
+        user={resetUser}
+      />
+    );
+
+  if (resetPasswordTokenFlag) return <ResetPasswordWToken />;
+
   return (
-    <Router>
-      <Route path='/'>
-        <div className='container'>
-          {loggedIn ? (
-            <>
-              {loginMessage ? setIntervalMessage() : null}
-              {loginMessage ? (
-                <h3 className={classes.SuccessMessage}>
-                  {loginMessage.successMessage}
-                </h3>
-              ) : null}
+    <div className='container'>
+      {loggedIn ? (
+        <>
+          {loginMessage ? setIntervalMessage() : null}
+          {loginMessage ? (
+            <h3 className={classes.SuccessMessage}>
+              {loginMessage.successMessage}
+            </h3>
+          ) : null}
 
-              <Chatroom
-                user={user}
-                getAllMessages={getAllMessages}
-                setGetAllMessages={setGetAllMessages}
-                socket={socket}
-                io={io}
-                userThatSignedUp={userThatSignedUp}
-                userFlag={userFlag}
-              />
-            </>
+          <Chatroom
+            user={user}
+            getAllMessages={getAllMessages}
+            setGetAllMessages={setGetAllMessages}
+            socket={socket}
+            io={io}
+            userThatSignedUp={userThatSignedUp}
+            userFlag={userFlag}
+          />
+        </>
+      ) : (
+        <>
+          <h1 className='center teal-text text-teal-lighten-2'>Welcome to</h1>
+          <h1 className={h1Styling[0] + h1Styling[1]}>
+            <span className='#000000 black'>Chat.io</span>
+          </h1>
+
+          <Login
+            setSignInPassword={setSignInPassword}
+            setSignInUsername={setSignInUsername}
+            login={login}
+            signInPassword={signInPassword}
+            signInUsername={signInUsername}
+          />
+
+          <Link to='/resetpassword' onClick={() => setResetPasswordFlag(true)}>
+            Reset Password
+          </Link>
+
+          {loginErrorMessage ? (
+            <p className='white-text'>{loginErrorMessage.errorMessage}</p>
+          ) : null}
+
+          <Signup
+            setUsername={setUsername}
+            setPassword={setPassword}
+            createUsername={createUsername}
+            username={username}
+            password={password}
+            email={email}
+            setEmail={setEmail}
+          />
+          {signup ? <p className='white-text'>{signup.message}</p> : null}
+          {signupError ? (
+            <p className='white-text'>{signupError.errors[0].msg}</p>
           ) : (
-            <>
-              <h1 className='center teal-text text-teal-lighten-2'>
-                Welcome to
-              </h1>
-              <h1 className={h1Styling[0] + h1Styling[1]}>
-                <span className='#000000 black'>Chat.io</span>
-              </h1>
-
-              <Login
-                setSignInPassword={setSignInPassword}
-                setSignInUsername={setSignInUsername}
-                login={login}
-                signInPassword={signInPassword}
-                signInUsername={signInUsername}
-              />
-
-              {loginErrorMessage ? (
-                <p className='white-text'>{loginErrorMessage.errorMessage}</p>
-              ) : null}
-
-              <Signup
-                setUsername={setUsername}
-                setPassword={setPassword}
-                createUsername={createUsername}
-                username={username}
-                password={password}
-                email={email}
-                setEmail={setEmail}
-              />
-              {signup ? <p className='white-text'>{signup.message}</p> : null}
-              {signupError ? (
-                <p className='white-text'>{signupError.errors[0].msg}</p>
-              ) : (
-                <p></p>
-              )}
-            </>
+            <p></p>
           )}
-        </div>
-      </Route>
-      <Link to='/forgotpassword'>Forgot Password?</Link>
-
-      <Switch>
-        <Route exact path='/forgotpassword' component={ForgotPassword} />
-      </Switch>
-    </Router>
+        </>
+      )}
+    </div>
   );
 };
 

@@ -20,15 +20,17 @@ const Chatroom = ({
   const [getnewMessage, setNewMessage] = useState([]);
   const [_typing, setTyping] = useState(false);
   const [userTyping, setUserTyping] = useState({});
-
   const messagesEndRef = useRef(null);
+
+  const ENDPOINTPRODUCTION = 'https://chatroom-express-db.herokuapp.com';
+  const ENDPOINTDEV = 'http://localhost:4000';
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    fetch(`https://chatroom-express-db.herokuapp.com/getallusers`)
+    fetch(`${ENDPOINTDEV}/getallusers`)
       .then((data) => data.json())
       .then((users) => {
         setGetAllUsers(users);
@@ -40,7 +42,7 @@ const Chatroom = ({
     setTimeout(() => {
       if (userFlag) {
         fetch(
-          `https://chatroom-express-db.herokuapp.com/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
+          `${ENDPOINTDEV}/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -50,9 +52,7 @@ const Chatroom = ({
             console.log(err);
           });
       } else {
-        fetch(
-          `https://chatroom-express-db.herokuapp.com/getuser/${user.username}/${user.id}`
-        )
+        fetch(`${ENDPOINTDEV}/getuser/${user.username}/${user.id}`)
           .then((response) => response.json())
           .then((data) => {
             setGetMessages(data.message);
@@ -89,7 +89,7 @@ const Chatroom = ({
   useEffect(() => {
     console.log('use effect is in use.');
     if (flag === true);
-    fetch(`https://chatroom-express-db.herokuapp.com/getallmessages`)
+    fetch(`${ENDPOINTDEV}/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);
@@ -125,16 +125,13 @@ const Chatroom = ({
 
     if (userFlag) {
       //redirect user to chatroom is user signs up.
-      fetch(
-        `https://chatroom-express-db.herokuapp.com/sendmessage/${userThatSignedUp.user.id}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      )
+      fetch(`${ENDPOINTDEV}/sendmessage/${userThatSignedUp.user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
         .then((data) => {
           return data.json();
         })
@@ -147,16 +144,13 @@ const Chatroom = ({
         });
     } else {
       //login in regulaur way.
-      fetch(
-        `https://chatroom-express-db.herokuapp.com/sendmessage/${user.id}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        }
-      )
+      fetch(`${ENDPOINTDEV}/sendmessage/${user.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
         .then((data) => {
           return data.json();
         })
