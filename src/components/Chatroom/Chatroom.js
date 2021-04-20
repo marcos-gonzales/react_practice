@@ -30,7 +30,7 @@ const Chatroom = ({
   };
 
   useEffect(() => {
-    fetch(`${ENDPOINTDEV}/getallusers`)
+    fetch(`${ENDPOINTPRODUCTION}/getallusers`)
       .then((data) => data.json())
       .then((users) => {
         setGetAllUsers(users);
@@ -42,7 +42,7 @@ const Chatroom = ({
     setTimeout(() => {
       if (userFlag) {
         fetch(
-          `${ENDPOINTDEV}/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
+          `${ENDPOINTPRODUCTION}/getuser/${userThatSignedUp.user.username}/${userThatSignedUp.user.id}`
         )
           .then((response) => response.json())
           .then((data) => {
@@ -52,7 +52,7 @@ const Chatroom = ({
             console.log(err);
           });
       } else {
-        fetch(`${ENDPOINTDEV}/getuser/${user.username}/${user.id}`)
+        fetch(`${ENDPOINTPRODUCTION}/getuser/${user.username}/${user.id}`)
           .then((response) => response.json())
           .then((data) => {
             setGetMessages(data.message);
@@ -89,7 +89,7 @@ const Chatroom = ({
   useEffect(() => {
     console.log('use effect is in use.');
     if (flag === true);
-    fetch(`${ENDPOINTDEV}/getallmessages`)
+    fetch(`${ENDPOINTPRODUCTION}/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);
@@ -125,7 +125,7 @@ const Chatroom = ({
 
     if (userFlag) {
       //redirect user to chatroom is user signs up.
-      fetch(`${ENDPOINTDEV}/sendmessage/${userThatSignedUp.user.id}`, {
+      fetch(`${ENDPOINTPRODUCTION}/sendmessage/${userThatSignedUp.user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const Chatroom = ({
         });
     } else {
       //login in regulaur way.
-      fetch(`${ENDPOINTDEV}/sendmessage/${user.id}`, {
+      fetch(`${ENDPOINTPRODUCTION}/sendmessage/${user.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
