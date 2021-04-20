@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Link, Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Login from './components/Login/Login';
@@ -53,7 +53,7 @@ const App = () => {
       email: email,
     };
 
-    fetch(`${ENDPOINTDEV}/createuser`, {
+    fetch(`${ENDPOINTPRODUCTION}/createuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ const App = () => {
       signInPassword: signInPassword,
     };
 
-    fetch('${ENDPOINTDEV}/signin', {
+    fetch(`${ENDPOINTPRODUCTION}/signin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetch(`${ENDPOINTDEV}/getallmessages`)
+    fetch(`${ENDPOINTPRODUCTION}/getallmessages`)
       .then((data) => data.json())
       .then((messages) => {
         setGetAllMessages(messages);
@@ -139,7 +139,7 @@ const App = () => {
 
     console.log(emailValue);
 
-    fetch('http://localhost:4000/resetpassword', {
+    fetch(`${ENDPOINTPRODUCTION}/resetpassword`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

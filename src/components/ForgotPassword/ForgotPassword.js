@@ -12,15 +12,17 @@ const ForgotPassword = ({
   const [tokenUserEntered, setTokenUserEntered] = useState('');
   const [newPasswordForm, setNewPasswordForm] = useState(false);
   const [newPasswordValue, setNewPasswordValue] = useState('');
+  const [incorrectToken, setIncorrectToken] = useState(false);
+  const [passwordChangedMessage, setPasswordChangedMessage] = useState();
 
   const verifyTokens = () => {
     console.log(token);
     console.log(tokenUserEntered);
     if (token === tokenUserEntered) {
-      console.log('trueee');
       setNewPasswordForm(true);
+      setIncorrectToken(false);
     } else {
-      console.log('falseee');
+      setIncorrectToken(true);
     }
   };
 
@@ -30,13 +32,15 @@ const ForgotPassword = ({
       user: user,
     };
 
-    fetch(`http://localhost:4000/resetpassword/${token}`, {
+    fetch(`https://chatroom-express-db.herokuapp.com/resetpassword/${token}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    });
+    })
+      .then((data) => data.json())
+      .then((changedPassword) => setPasswordChangedMessage(changedPassword));
   };
 
   return (
@@ -76,7 +80,7 @@ const ForgotPassword = ({
       </button>
 
       {sendUserEmail ? (
-        <div className='container'>
+        <div>
           <div>
             <h5 className='yellow-text text-yellow-accent-1'>
               If you have an account with us we have just sent you an email to
@@ -89,9 +93,10 @@ const ForgotPassword = ({
             </h5>
           </div>
           <div>
-            <label>
+            <label style={{ fontSize: '1.2rem' }}>
               Token
               <input
+                className='grey-text text-lighten-5'
                 type='text'
                 onChange={(e) => setTokenUserEntered(e.target.value)}
               ></input>
@@ -106,23 +111,40 @@ const ForgotPassword = ({
         </div>
       ) : null}
 
+      {incorrectToken ? (
+        <p className='grey-text text-lighten-5' style={{ fontSize: '1.2rem' }}>
+          The token you entered doesn't match..
+        </p>
+      ) : null}
+
       {newPasswordForm ? (
         <div>
-          <label>
-            New Password
-            <input
-              type='input'
-              name='newpassword'
-              onChange={(e) => setNewPasswordValue(e.target.value)}
-            ></input>
-          </label>
-          <button
-            className="btn-small brown darken-1 white-text waves-effect waves-light'"
-            onClick={submitNewPassword}
-          >
-            Submit
-          </button>
+          <div>
+            <label style={{ fontSize: '1.2rem' }}>
+              New Password
+              <input
+                className='grey-text text-lighten-5'
+                type='text'
+                name='newpassword'
+                onChange={(e) => setNewPasswordValue(e.target.value)}
+              ></input>
+            </label>
+            <button
+              className="btn-small brown darken-1 white-text waves-effect waves-light'"
+              onClick={submitNewPassword}
+            >
+              Submit
+            </button>
+          </div>
         </div>
+      ) : null}
+      {passwordChangedMessage ? (
+        <p
+          className='green-text  text-lighten-1'
+          style={{ fontSize: '1.2rem' }}
+        >
+          {passwordChangedMessage.message}
+        </p>
       ) : null}
     </div>
   );
