@@ -180,7 +180,8 @@ const Chatroom = ({
     });
   };
 
-  if (!getAllMessages || !getAllUsers) return <h1>loading...</h1>;
+  if (!getAllMessages || !getAllUsers)
+    return <h1 className='grey-text text-lighten-2'>loading...</h1>;
 
   return (
     <div className='container'>

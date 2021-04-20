@@ -11,7 +11,7 @@ import ResetPasswordWToken from './components/ResetPasswordWToken/ResetPasswordW
 import { io } from 'socket.io-client';
 const ENDPOINTPRODUCTION = 'https://chatroom-express-db.herokuapp.com';
 const ENDPOINTDEV = 'http://localhost:4000';
-var socket = io(ENDPOINTDEV, {
+var socket = io(ENDPOINTPRODUCTION, {
   forceNew: true,
   origins: ENDPOINTDEV,
 });
