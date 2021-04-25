@@ -14,7 +14,7 @@ const Login = ({
   return (
     <div>
       <h2 className='teal-text teal-lighten-2' style={{ marginTop: '60px' }}>
-        Login in!
+        Login!
       </h2>
       <div>
         <label className={labelStyling[0] + labelStyling[1]}>
@@ -22,7 +22,7 @@ const Login = ({
           <input
             className='white-text text-darken-2 input-field'
             type='text'
-            placeholder='Oswald'
+            placeholder='your username'
             name='signInUsername'
             onChange={(e) => setSignInUsername(e.target.value.toLowerCase())}
             onKeyDownCapture={(e) => (e.keyCode === 13 ? login(e) : null)}
@@ -36,7 +36,7 @@ const Login = ({
           <input
             className='white-text text-darken-2 input-field'
             type='password'
-            placeholder='iljulie'
+            placeholder='your password'
             name='signInPassword'
             onKeyDownCapture={(e) => (e.keyCode === 13 ? login(e) : null)}
             onChange={(e) => setSignInPassword(e.target.value)}
