@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+import ru from 'javascript-time-ago/locale/ru';
+
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
@@ -15,6 +19,9 @@ var socket = io(ENDPOINTPRODUCTION, {
   forceNew: true,
   origins: ENDPOINTDEV,
 });
+
+TimeAgo.addDefaultLocale(en);
+TimeAgo.addLocale(ru);
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);

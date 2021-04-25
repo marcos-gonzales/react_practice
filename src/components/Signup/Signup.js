@@ -22,7 +22,7 @@ const Signup = ({
           <input
             className='white-text text-darken-2 input-field'
             type='text'
-            placeholder='John Wick'
+            placeholder='your username'
             name='username'
             onKeyDownCapture={(e) =>
               e.keyCode === 13 ? createUsername(e) : null
@@ -38,7 +38,7 @@ const Signup = ({
           <input
             className='white-text text-darken-2 input-field'
             type='text'
-            placeholder='john@wick.com'
+            placeholder='youremail@email.com'
             name='email'
             onChange={(e) => setEmail(e.target.value.toLowerCase())}
             onKeyDownCapture={(e) =>
@@ -54,7 +54,7 @@ const Signup = ({
           <input
             className='white-text text-darken-2 input-field'
             type='password'
-            placeholder='*******'
+            placeholder='create a password'
             name='password'
             onChange={(e) => setPassword(e.target.value)}
             onKeyDownCapture={(e) =>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactTimeAgo from 'react-time-ago';
 import classes from './Chatroom.module.css';
 
 const Chatroom = ({
@@ -9,6 +10,7 @@ const Chatroom = ({
   io,
   userThatSignedUp,
   userFlag,
+  date,
 }) => {
   // eslint-disable-next-line no-unused-vars
   const [getMessages, setGetMessages] = useState();
@@ -195,13 +197,21 @@ const Chatroom = ({
               {getAllUsers.messages.map((user) =>
                 user.id === allMessages.userId ? (
                   <span key={user.id} className={classes.UsernameColor}>
-                    {user.username} :
+                    {user.username}:
                   </span>
                 ) : (
                   ''
                 )
               )}
               {allMessages.message}
+              {allMessages.createdAt ? (
+                <span
+                  className='grey-text text-darken-1'
+                  style={{ paddingLeft: '10px', fontSize: '1.2rem' }}
+                >
+                  <ReactTimeAgo date={allMessages.createdAt} locale='en-US' />
+                </span>
+              ) : null}
             </p>
             <div ref={messagesEndRef} />
           </div>
