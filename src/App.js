@@ -6,7 +6,6 @@ import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Chatroom from './components/Chatroom/Chatroom';
 import classes from './App.module.css';
-import ResetPasswordWToken from './components/ResetPasswordWToken/ResetPasswordWToken';
 
 import { io } from 'socket.io-client';
 const ENDPOINTPRODUCTION = 'https://chatroom-express-db.herokuapp.com';
@@ -170,10 +169,9 @@ const App = () => {
         resetPassword={resetPassword}
         token={token}
         user={resetUser}
+        setResetPasswordFlag={setResetPasswordFlag}
       />
     );
-
-  if (resetPasswordTokenFlag) return <ResetPasswordWToken />;
 
   return (
     <div className='container'>
