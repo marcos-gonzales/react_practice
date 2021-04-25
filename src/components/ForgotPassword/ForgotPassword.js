@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 
 const ForgotPassword = ({
   emailValue,
@@ -8,6 +9,7 @@ const ForgotPassword = ({
   resetPassword,
   token,
   user,
+  setResetPasswordFlag,
 }) => {
   const [tokenUserEntered, setTokenUserEntered] = useState('');
   const [newPasswordForm, setNewPasswordForm] = useState(false);
@@ -139,13 +141,20 @@ const ForgotPassword = ({
         </div>
       ) : null}
       {passwordChangedMessage ? (
-        <p
-          className='green-text  text-lighten-1'
-          style={{ fontSize: '1.2rem' }}
-        >
-          {passwordChangedMessage.message}
-        </p>
+        <>
+          <p
+            className='green-text  text-lighten-1'
+            style={{ fontSize: '1.2rem' }}
+          >
+            {passwordChangedMessage.message}
+          </p>
+        </>
       ) : null}
+      {passwordChangedMessage
+        ? setTimeout(() => {
+            setResetPasswordFlag(false);
+          }, 3500)
+        : null}
     </div>
   );
 };
